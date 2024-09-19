@@ -1,0 +1,19 @@
+services:
+  nginx:
+    build: ./nginx # 改変nginxのディレクトリ
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Tokyo
+    env_file:
+      - ./.env # AWS認証情報
+    volumes:
+      - "./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro" # nginxの設定ファイル
+      - "./data/lego:/var/lib/lego" # 証明書をdataディレクトリに永続化
+      - "./data/log:/var/log/nginx" # ログをdataディレクトリに永続化
+    ports:
+      - "80:80" # ポート
+      - "443:443" # ポート
+    links:
+      - app
+  app: # ダミーアプリケーション
+    image: httpd:2.4
